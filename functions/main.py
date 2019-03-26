@@ -1,12 +1,7 @@
 import requests
-import pprint
-import json
 import base64
-import parser
 import re
-import unicodedata
 
-pp = pprint.PrettyPrinter(indent=2)
 output = {}
 count = 0
 
@@ -34,7 +29,10 @@ def main():
         for string in response_json.get('result'):
             skills_dict = parse_and_create_dict(description=base64.b64decode(string), skills=skills)
 
+            # percentage = calculate_percentage(skills_dict, skills)
             print(skills_dict)
+
+            create_output(skills_dict)
 
 
 def get_skills():
@@ -47,10 +45,9 @@ def get_skills():
 
     with open('../skills.txt') as skills_file:
         for skill in skills_file:
-            skills.append(skill.strip())  # .replace("\n", "")
+            skills.append(skill.strip().lower())
 
-    # print(filter(None, skills))
-
+    # if item in skills list is None, ignore
     skills = [s for s in skills if s]
 
     return skills
@@ -63,35 +60,15 @@ def parse_and_create_dict(description, skills):
     :param skills:
     :return:
     """
-    # print(skills)
-    # print("-----------------------------------")
-    # print(description + "\n\n\n")
-    # print("-----------------------------------")
 
     skills_dict = {}
-    global count
-    global count_2
 
-    # for skill in skills:
-    #     frequency = 0
-    #     if skill.lower() in description:
-    #         count += 1
-    #         frequency += 1
-
-
-    words = []
-
-    for word in description.split():
-        words.append(word.strip())
-
-    #print(words)
     for skill in skills:
         frequency = 0
-        for word in words:
-            if skill.lower() in word:
-                frequency += 1
+        for x in re.findall(skill, description):
+            frequency += 1
 
-            skills_dict.update({skill: frequency})
+        skills_dict.update({skill: frequency})
 
     return skills_dict
 
@@ -102,23 +79,42 @@ def parse_and_create_dict(description, skills):
 # multithreading/processing
 # convert to json or csv - probably json to feed back into another api?
 
-def calculate_percentage():
+def calculate_percentage(skills_dict, skills):
     """
     Calculate the percentage of the skills.txt words found in each job description.
     :return:
     """
-    pass
+    length_of_list = len(skills)
+    skills_not_found = 0
+    skills_found = 0
+
+    for skill in skills:
+        for key, value in skills_dict.items():
+            if skill == key and value == 0:
+                skills_not_found += 1
+            else:
+                skills_found += 1
+
+    print(skills_not_found)
+    print(length_of_list)
+    print(skills_found)
+
+    a = int(length_of_list) - int(skills_not_found)
+    percentage = int(a / int(length_of_list) * 100)
+
+    print(str(percentage) + "\n")
+
+    # print(skills_dict)
+    # print(skills)
 
 
-def create_output(job_comparison_dict):
+def create_output(skills_dict):
     """
     Generate the dict using the first line of the job description as the parent and the skills listed as children.
     :return:
     """
-
-    output.update(job_comparison_dict)
-
-    return output
+    pass
+    # print(skills_dict)
 
 
 main()
