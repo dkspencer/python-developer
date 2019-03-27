@@ -54,7 +54,7 @@ def main():
 
         with open('../data.json', 'w') as output_file:
             logger.info("Saving to file")
-            json.dump(output_jobs_skills, output_file)
+            json.dump(output_jobs_skills, output_file, indent=4)
 
         print("Script finished successfully.")
 
