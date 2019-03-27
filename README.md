@@ -28,3 +28,8 @@ Please feel free to use any Python libraries, databases, programming methods etc
 If possible, please upload your solution and output data to a public git repository, and email the details over to info@ciivsoft.com so we can take a look.
 
 Thanks in advance and happy coding :)
+
+## How It Works
+*This script is not designed to run locally.*
+
+![Flow chart diagram](Diagram.png)
