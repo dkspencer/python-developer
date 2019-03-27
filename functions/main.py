@@ -20,10 +20,12 @@ def main():
 
     global job_count
 
-    response = requests.get('http://ciivsoft.getsandbox.com/jobs', headers={"Content-Type": "application/json"})
+    response = requests.get('http://ciivsoft.getsandbox.com/jobs',
+                            headers={"Content-Type": "application/json"})
 
     if response.status_code != 200:
-        print('Status:', response.status_code, 'Headers:', response.headers, 'Error Response:', response.json())
+        print('Status:', response.status_code, 'Headers:',
+              response.headers, 'Error Response:', response.json())
 
     else:
         print("Status: 200 OK, continuing...\n")
@@ -35,7 +37,8 @@ def main():
         print("Decoding job descriptions.")
 
         for string in response_json.get('result'):
-            job_descriptions.append(base64.b64decode(string))
+            job_descriptions.append(base64.b64decode(
+                string).decode("utf-8").replace('\xa0', u''))
             job_count += 1
 
         with Executor() as executor:
@@ -43,25 +46,18 @@ def main():
                 skill_frequency = {}
                 data = executor.submit(parse_and_create_dict, job, skills)
 
-                print(data.result())
-                # print(type(data.result()))
+                # print(data.result())
 
                 for skill, frequency in data.result().items():
                     skill_frequency.update(
                         {
-                            skill.title(): {
-                                "Frequency": frequency
-                            }
+                            skill.title(): frequency
                         }
                     )
 
-                #print(job, skills)
-                create_output(job, skill_frequency)
-
-        # print(results)
+                create_output(job, skill_frequency, skills)
 
         print(output_jobs_skills)
-        # print(output)
 
 
 def get_skills():
@@ -90,79 +86,89 @@ def parse_and_create_dict(description, skills):
     :return:
     """
 
-    skills_dict = {}
+    data = {}
     for skill in skills:
         frequency = 0
         for x in re.findall(skill, description):
             frequency += 1
 
-        skills_dict.update({skill: frequency})
+        data.update({skill: frequency})
 
-    return skills_dict
+    return data
 
 
 # TODO Save output to file
 # TODO Percentages maybe
-# TODO Find title of job description
-# TODO Push data back to API?
-# TODO Multithreading
 
-def calculate_percentage(skills_dict, skills):
+def calculate_percentage(get_stat, skill_frequency, skills):
     """
     Calculate the percentage of the skills.txt words found in each job description.
     :return:
     """
-    length_of_list = len(skills)
-    skills_not_found = 0
-    skills_found = 0
 
-    for skill in skills:
-        for key, value in skills_dict.items():
-            if skill == key and value == 0:
+    if get_stat == "percentage":
+
+        length_of_skills_list = len(skills)
+        skills_not_found = 0
+        skills_found = 0
+
+        for skill, frequency in skill_frequency.items():
+            if frequency == 0:
                 skills_not_found += 1
             else:
                 skills_found += 1
+        
+        a = int(length_of_skills_list) - int(skills_not_found)
+        percentage = int(a / int(length_of_skills_list) * 100)
 
-    print(skills_not_found)
-    print(length_of_list)
-    print(skills_found)
-
-    a = int(length_of_list) - int(skills_not_found)
-    percentage = int(a / int(length_of_list) * 100)
-
-    print(str(percentage) + "\n")
-
-    # print(skills_dict)
-    # print(skills)
+        return str(percentage) + "%"
 
 
-def create_output(job, skill_frequency):
+    elif get_stat == "maximum":
+        result = max(skill_frequency, key=skill_frequency.get)
+
+        return result
+
+    elif get_stat == "minimum":
+        result = min(skill_frequency, key=skill_frequency.get)
+
+        return result
+
+    # print(skills_not_found)
+    # print(length_of_list)
+    # print(skills_found)
+
+    # a = int(length_of_list) - int(skills_not_found)
+    # percentage = int(a / int(length_of_list) * 100)
+
+    # print(str(percentage) + "\n")
+
+    # # print(skills_dict)
+    # # print(skills)
+
+
+def create_output(job, skill_frequency, skills):
     """
     Generate the dict using the first line of the job description as the parent and the skills listed as children.
     :return:
     """
-    job_title = job.split('\n', 1)[0]
+    job_title = job.split('\n', 1)[0].strip()
+    if "job title:" not in job_title:
+        job_title = "job title: " + job_title
+
     output = output_jobs_skills.update(
         {
             job_title.title(): {
-                "Job Description": job,
-                "Skills": skill_frequency
+                "Job Description": job.replace('\n', '').replace(job_title, ''),
+                "Skill Frequency": skill_frequency,
+                "Statistics": {
+                    "Skills Found": calculate_percentage(get_stat="percentage", skill_frequency=skill_frequency, skills=skills),
+                    "Highest Frequency": calculate_percentage(get_stat="maximum", skill_frequency=skill_frequency, skills=skills),
+                    "Lowest Frequency": calculate_percentage(get_stat="minimum", skill_frequency=skill_frequency, skills=skills)
+                }
             }
         }
     )
-    # if description in output:
-    #     if output[description]:
-    #         output[description].
-    #
-    # output.update(
-    #     {
-    #         "Job Description": description,
-    #         "Skills": skills
-    #     },
-    #     {
-    #         "Job Count": job_count
-    #     }
-    # )
 
 
 if __name__ == '__main__':
