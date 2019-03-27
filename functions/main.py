@@ -73,11 +73,11 @@ def parse_and_create_dict(description, skills):
     return skills_dict
 
 
-# frequency of skill occurance
-# percentage compared to other skills
-# skill name
-# multithreading/processing
-# convert to json or csv - probably json to feed back into another api?
+# TODO Save output to file
+# TODO Percentages maybe
+# TODO Find title of job description
+# TODO Push data back to API?
+# TODO Multithreading
 
 def calculate_percentage(skills_dict, skills):
     """
