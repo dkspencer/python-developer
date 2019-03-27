@@ -47,7 +47,13 @@ def main():
                 # print(type(data.result()))
 
                 for skill, frequency in data.result().items():
-                    skill_frequency.update({skill: frequency})
+                    skill_frequency.update(
+                        {
+                            skill.title(): {
+                                "Frequency": frequency
+                            }
+                        }
+                    )
 
                 #print(job, skills)
                 create_output(job, skill_frequency)
@@ -135,9 +141,13 @@ def create_output(job, skill_frequency):
     Generate the dict using the first line of the job description as the parent and the skills listed as children.
     :return:
     """
+    job_title = job.split('\n', 1)[0]
     output = output_jobs_skills.update(
         {
-            job: skill_frequency
+            job_title.title(): {
+                "Job Description": job,
+                "Skills": skill_frequency
+            }
         }
     )
     # if description in output:
