@@ -152,12 +152,15 @@ def create_output(job, skill_frequency, skills):
 
     job_title = job.split('\n', 1)[0].strip()
     if "job title:" not in job_title:
+        original_title = job_title
         job_title = "job title: " + job_title
+    else:
+        original_title = job_title
 
     output_jobs_skills.update(
         {
             job_title.title(): {
-                "Job Description": job.replace('\n', ' ').replace(job_title, ''),
+                "Job Description": job.replace('\n', ' ').replace(original_title + " ", ''),
                 "Skill Frequency": skill_frequency,
                 "Statistics": {
                     "Skills Found": calculate_percentage(get_stat="percentage", skill_frequency=skill_frequency,
