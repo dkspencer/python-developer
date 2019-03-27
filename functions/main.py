@@ -3,10 +3,13 @@ import base64
 import re
 from concurrent.futures import ProcessPoolExecutor as Executor
 
-output = {}
+output_jobs_skills = {}
 count = 0
 
 count_2 = 0
+test = []
+
+job_count = 0
 
 
 def main():
@@ -14,6 +17,8 @@ def main():
     Call the requests GET on the provided API url.
     :return:
     """
+
+    global job_count
 
     response = requests.get('http://ciivsoft.getsandbox.com/jobs', headers={"Content-Type": "application/json"})
 
@@ -28,20 +33,29 @@ def main():
         skills = get_skills()
 
         print("Decoding job descriptions.")
+
         for string in response_json.get('result'):
             job_descriptions.append(base64.b64decode(string))
+            job_count += 1
 
         with Executor() as executor:
             for job in job_descriptions:
+                skill_frequency = {}
                 data = executor.submit(parse_and_create_dict, job, skills)
 
-                frequency = data
+                print(data.result())
+                # print(type(data.result()))
 
-                #print(data.result())
+                for skill, frequency in data.result().items():
+                    skill_frequency.update({skill: frequency})
 
-                results.update(frequency)
+                #print(job, skills)
+                create_output(job, skill_frequency)
 
-        print(results)
+        # print(results)
+
+        print(output_jobs_skills)
+        # print(output)
 
 
 def get_skills():
@@ -116,13 +130,29 @@ def calculate_percentage(skills_dict, skills):
     # print(skills)
 
 
-def create_output(skills_dict):
+def create_output(job, skill_frequency):
     """
     Generate the dict using the first line of the job description as the parent and the skills listed as children.
     :return:
     """
-    pass
-    # print(skills_dict)
+    output = output_jobs_skills.update(
+        {
+            job: skill_frequency
+        }
+    )
+    # if description in output:
+    #     if output[description]:
+    #         output[description].
+    #
+    # output.update(
+    #     {
+    #         "Job Description": description,
+    #         "Skills": skills
+    #     },
+    #     {
+    #         "Job Count": job_count
+    #     }
+    # )
 
 
 if __name__ == '__main__':
