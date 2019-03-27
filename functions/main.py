@@ -1,6 +1,7 @@
 import requests
 import base64
 import re
+from concurrent.futures import ProcessPoolExecutor as Executor
 
 output = {}
 count = 0
@@ -26,13 +27,21 @@ def main():
 
         skills = get_skills()
 
+        print("Decoding job descriptions.")
         for string in response_json.get('result'):
-            skills_dict = parse_and_create_dict(description=base64.b64decode(string), skills=skills)
+            job_descriptions.append(base64.b64decode(string))
 
-            # percentage = calculate_percentage(skills_dict, skills)
-            print(skills_dict)
+        with Executor() as executor:
+            for job in job_descriptions:
+                data = executor.submit(parse_and_create_dict, job, skills)
 
-            create_output(skills_dict)
+                frequency = data
+
+                #print(data.result())
+
+                results.update(frequency)
+
+        print(results)
 
 
 def get_skills():
@@ -62,7 +71,6 @@ def parse_and_create_dict(description, skills):
     """
 
     skills_dict = {}
-
     for skill in skills:
         frequency = 0
         for x in re.findall(skill, description):
@@ -117,4 +125,7 @@ def create_output(skills_dict):
     # print(skills_dict)
 
 
-main()
+if __name__ == '__main__':
+    job_descriptions = []
+    results = {}
+    main()
