@@ -1,5 +1,5 @@
-2019-03-27 20:13:33,564:INFO:Status: 200, continueing...
-2019-03-27 20:13:33,564:INFO:Found skills.txt file, added skills to list and empty items removed.
-2019-03-27 20:13:33,564:INFO:Decoded job descriptions
-2019-03-27 20:13:33,567:INFO:Parsing job descriptions and extracting frequency of skills matched.
-2019-03-27 20:13:33,593:INFO:Saving to file
+2019-03-27 20:21:41,252:INFO:Status: 200, continueing...
+2019-03-27 20:21:41,252:INFO:Found skills.txt file, added skills to list and empty items removed.
+2019-03-27 20:21:41,253:INFO:Decoded job descriptions
+2019-03-27 20:21:41,255:INFO:Parsing job descriptions and extracting frequency of skills matched.
+2019-03-27 20:21:41,281:INFO:Saving to file

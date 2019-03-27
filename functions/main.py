@@ -6,10 +6,6 @@ import sys
 import logging
 from concurrent.futures import ProcessPoolExecutor as Executor
 
-# logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s')
-# logger = logging.getLogger('main')
-# logger.setLevel(logging.INFO)
-
 logging.basicConfig(filename='main.log', level=logging.INFO,
                     format='%(asctime)s:%(levelname)s:%(message)s')
 logger = logging.getLogger(__name__)
@@ -77,7 +73,7 @@ def get_skills():
         logger.error("skills.txt file not found, exiting script.")
         sys.exit()
 
-    skills = [s for s in skills if s]
+    skills = [s for s in skills if s] # remove empty list items
 
     logger.info("Found skills.txt file, added skills to list and empty items removed.")
 
