@@ -32,4 +32,4 @@ Thanks in advance and happy coding :)
 ## How It Works
 *This script is not designed to run locally.*
 
-![Flow chart diagram](Diagram.png)
+![Flow chart diagram](diagram.png)
