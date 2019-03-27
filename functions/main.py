@@ -6,7 +6,7 @@ import sys
 import logging
 from concurrent.futures import ProcessPoolExecutor as Executor
 
-logging.basicConfig(filename='main.log', level=logging.INFO,
+logging.basicConfig(filename='../output/main.log', level=logging.INFO,
                     format='%(asctime)s:%(levelname)s:%(message)s')
 logger = logging.getLogger(__name__)
 
@@ -48,7 +48,7 @@ def main():
 
                 create_output(job, skill_frequency, skills)
 
-        with open('../data.json', 'w') as output_file:
+        with open('../output/data.json', 'w') as output_file:
             logger.info("Saving to file")
             json.dump(output_jobs_skills, output_file, indent=4)
 
