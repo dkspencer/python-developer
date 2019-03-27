@@ -1,6 +1,7 @@
 import requests
 import base64
 import re
+import json
 from concurrent.futures import ProcessPoolExecutor as Executor
 
 output_jobs_skills = {}
@@ -57,7 +58,10 @@ def main():
 
                 create_output(job, skill_frequency, skills)
 
-        print(output_jobs_skills)
+        #print(output_jobs_skills)
+        with open('data.json', 'w') as output_file:
+            print("Saving file.")
+            json.dump(output_jobs_skills, output_file)
 
 
 def get_skills():
@@ -117,12 +121,11 @@ def calculate_percentage(get_stat, skill_frequency, skills):
                 skills_not_found += 1
             else:
                 skills_found += 1
-        
+
         a = int(length_of_skills_list) - int(skills_not_found)
         percentage = int(a / int(length_of_skills_list) * 100)
 
         return str(percentage) + "%"
-
 
     elif get_stat == "maximum":
         result = max(skill_frequency, key=skill_frequency.get)
@@ -133,18 +136,6 @@ def calculate_percentage(get_stat, skill_frequency, skills):
         result = min(skill_frequency, key=skill_frequency.get)
 
         return result
-
-    # print(skills_not_found)
-    # print(length_of_list)
-    # print(skills_found)
-
-    # a = int(length_of_list) - int(skills_not_found)
-    # percentage = int(a / int(length_of_list) * 100)
-
-    # print(str(percentage) + "\n")
-
-    # # print(skills_dict)
-    # # print(skills)
 
 
 def create_output(job, skill_frequency, skills):
@@ -169,6 +160,8 @@ def create_output(job, skill_frequency, skills):
             }
         }
     )
+
+
 
 
 if __name__ == '__main__':
